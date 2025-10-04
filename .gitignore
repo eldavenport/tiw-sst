@@ -1,0 +1,7 @@
+**.DS_Store
+**.nc
+**.cdf
+**.npy
+**.npz
+**__pycache__/
+
