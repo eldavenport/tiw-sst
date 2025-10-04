@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+        environment-file: environment.yaml
+        activate-environment: tiw-sst-forecasting
+        
+    - name: Lint with flake8
+      shell: bash -l {0}
+      run: |
+        conda install flake8 -y
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: Test with pytest
+      shell: bash -l {0}
+      run: |
+        # Create dummy test data since we don't have actual NetCDF files in CI
+        mkdir -p data/raw
+        pytest data/preprocessing_test.py -v --tb=short
+        
+    - name: Test preprocessing script directly
+      shell: bash -l {0}
+      run: |
+        # Test that the script can be imported without errors
+        python -c "import data.preprocessing; print('✓ Module imports successfully')"

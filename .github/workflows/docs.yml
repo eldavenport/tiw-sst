@@ -1,0 +1,44 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: 3.11
+        environment-file: environment.yaml
+        activate-environment: tiw-sst-forecasting
+        
+    - name: Build documentation
+      shell: bash -l {0}
+      run: |
+        cd docs
+        make html
+        
+    - name: Check documentation build
+      shell: bash -l {0}
+      run: |
+        # Check that key documentation files were created
+        ls -la docs/build/html/
+        test -f docs/build/html/index.html
+        test -f docs/build/html/modules.html
+        echo "✓ Documentation built successfully"
+        
+    - name: Deploy documentation to GitHub Pages
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/build/html
