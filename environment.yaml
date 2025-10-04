@@ -24,3 +24,5 @@ dependencies:
   - pip
   - pip:
     - mlflow>=2.8.0
+    - black>=23.0.0
+    - isort>=5.12.0
