@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.ref }}  # cancel previous runs on the same branch
+  cancel-in-progress: true  # cancel outdated runs
+  
 permissions:
   contents: write
   pages: write
