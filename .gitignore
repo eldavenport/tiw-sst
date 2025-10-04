@@ -5,3 +5,4 @@
 **.npz
 **__pycache__/
 **.csv
+**.h5
