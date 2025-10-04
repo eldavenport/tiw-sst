@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; TIW SST Forecasting 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="TIW SST Forecasting Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TIW SST Forecasting
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-data.preprocessing">Preprocessing Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.load_theta_data"><code class="docutils literal notranslate"><span class="pre">load_theta_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.crop_region"><code class="docutils literal notranslate"><span class="pre">crop_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.compute_sst_anomalies"><code class="docutils literal notranslate"><span class="pre">compute_sst_anomalies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.generate_training_sequences"><code class="docutils literal notranslate"><span class="pre">generate_training_sequences()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.save_training_data_hdf5"><code class="docutils literal notranslate"><span class="pre">save_training_data_hdf5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.load_training_data_hdf5"><code class="docutils literal notranslate"><span class="pre">load_training_data_hdf5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.save_pytorch_training_data"><code class="docutils literal notranslate"><span class="pre">save_pytorch_training_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data.preprocessing.preprocess_tiw_data"><code class="docutils literal notranslate"><span class="pre">preprocess_tiw_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">load_theta_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">crop_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">compute_sst_anomalies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">generate_training_sequences()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">save_pytorch_training_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">preprocess_tiw_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TIW SST Forecasting</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<section id="module-data.preprocessing">
+<span id="preprocessing-module"></span><h2>Preprocessing Module<a class="headerlink" href="#module-data.preprocessing" title="Link to this heading"></a></h2>
+<p>TIW SST Data Preprocessing</p>
+<p>This module preprocesses MITgcm SST data for machine learning forecasting of
+Tropical Instability Waves (TIW).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.load_theta_data">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">load_theta_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">netcdf_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#load_theta_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.load_theta_data" title="Link to this definition"></a></dt>
+<dd><p>Load THETA (SST) data from NetCDF file and remove singleton Z dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>netcdf_file_path</strong> (<em>Path</em>) – Path to NetCDF file containing THETA data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>xarray DataArray with THETA data (time, YC, XC)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If NetCDF file doesn’t exist</p></li>
+<li><p><strong>KeyError</strong> – If THETA variable not found in dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataArray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.crop_region">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">crop_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_max</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#crop_region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.crop_region" title="Link to this definition"></a></dt>
+<dd><p>Crop THETA data to specified lat/lon bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta_data</strong> (<em>DataArray</em>) – xarray DataArray with XC, YC coordinates</p></li>
+<li><p><strong>lat_min</strong> (<em>float</em>) – Minimum latitude (degrees)</p></li>
+<li><p><strong>lat_max</strong> (<em>float</em>) – Maximum latitude (degrees)</p></li>
+<li><p><strong>lon_min</strong> (<em>float</em>) – Minimum longitude (degrees)</p></li>
+<li><p><strong>lon_max</strong> (<em>float</em>) – Maximum longitude (degrees)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cropped xarray DataArray</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no data points fall within specified bounds</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataArray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.compute_sst_anomalies">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">compute_sst_anomalies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#compute_sst_anomalies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.compute_sst_anomalies" title="Link to this definition"></a></dt>
+<dd><p>Compute SST anomalies relative to temporal mean at each grid point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>theta_data</strong> (<em>DataArray</em>) – xarray DataArray with THETA (SST) data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>xarray DataArray of SST anomalies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataArray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.generate_training_sequences">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">generate_training_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_anomalies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_anomalies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#generate_training_sequences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.generate_training_sequences" title="Link to this definition"></a></dt>
+<dd><p>Generate training sequences with sliding window approach.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_anomalies</strong> (<em>DataArray</em>) – Input region SST anomalies (time, lat, lon)</p></li>
+<li><p><strong>output_anomalies</strong> (<em>DataArray</em>) – Output region SST anomalies (time, lat, lon)</p></li>
+<li><p><strong>input_length</strong> (<em>int</em>) – Number of days for input sequence</p></li>
+<li><p><strong>output_length</strong> (<em>int</em>) – Number of days for output sequence</p></li>
+<li><p><strong>stride</strong> (<em>int</em>) – Stride between sequences in days</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of (input_sequences, output_sequences, sequence_dates)
+- input_sequences: numpy array (samples, time, lat, lon)
+- output_sequences: numpy array (samples, time, lat, lon)
+- sequence_dates: DataFrame with sequence metadata</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If sequences would be too short given the data length</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<em>ndarray</em>, <em>ndarray</em>, <em>DataFrame</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.save_training_data_hdf5">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">save_training_data_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#save_training_data_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.save_training_data_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Save training data in HDF5 format for optimal performance and compression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_sequences</strong> (<em>ndarray</em>) – Input sequence array (samples, time, lat, lon)</p></li>
+<li><p><strong>output_sequences</strong> (<em>ndarray</em>) – Output sequence array (samples, time, lat, lon)</p></li>
+<li><p><strong>sequence_dates</strong> (<em>DataFrame</em>) – DataFrame with sequence date metadata</p></li>
+<li><p><strong>input_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Dictionary with input region bounds</p></li>
+<li><p><strong>output_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Dictionary with output region bounds</p></li>
+<li><p><strong>sequence_config</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary with sequence configuration</p></li>
+<li><p><strong>save_path</strong> (<em>Path</em>) – Path to save processed data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.load_training_data_hdf5">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">load_training_data_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#load_training_data_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.load_training_data_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Load training data from HDF5 format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data_path</strong> (<em>Path</em>) – Path to directory containing HDF5 file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing loaded data and metadata</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If HDF5 file doesn’t exist</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Dict</em>[str, <em>Any</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.save_pytorch_training_data">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">save_pytorch_training_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#save_pytorch_training_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.save_pytorch_training_data" title="Link to this definition"></a></dt>
+<dd><p>Save training data in PyTorch format (deprecated - use save_training_data_hdf5).</p>
+<p>This function is kept for backward compatibility. Use save_training_data_hdf5
+for better performance and compression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_sequences</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>output_sequences</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>sequence_dates</strong> (<em>DataFrame</em>)</p></li>
+<li><p><strong>input_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>output_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>sequence_config</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>save_path</strong> (<em>Path</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data.preprocessing.preprocess_tiw_data">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">preprocess_tiw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processed_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_netcdf_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_sequence_length_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sequence_length_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#preprocess_tiw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.preprocessing.preprocess_tiw_data" title="Link to this definition"></a></dt>
+<dd><p>Complete preprocessing pipeline for TIW SST data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw_data_path</strong> (<em>Path</em>) – Path to raw data directory</p></li>
+<li><p><strong>processed_data_path</strong> (<em>Path</em>) – Path to processed data directory</p></li>
+<li><p><strong>input_netcdf_filename</strong> (<em>str</em>) – Name of input NetCDF file</p></li>
+<li><p><strong>input_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Dictionary with input region lat/lon bounds</p></li>
+<li><p><strong>output_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Dictionary with output region lat/lon bounds</p></li>
+<li><p><strong>input_sequence_length_days</strong> (<em>int</em>) – Number of days for input sequences</p></li>
+<li><p><strong>output_sequence_length_days</strong> (<em>int</em>) – Number of days for output sequences</p></li>
+<li><p><strong>stride_days</strong> (<em>int</em>) – Stride between sequences in days</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with preprocessing results and statistics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Dict</em>[str, <em>Any</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">load_theta_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">netcdf_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#load_theta_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Load THETA (SST) data from NetCDF file and remove singleton Z dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>netcdf_file_path</strong> (<em>Path</em>) – Path to NetCDF file containing THETA data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>xarray DataArray with THETA data (time, YC, XC)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If NetCDF file doesn’t exist</p></li>
+<li><p><strong>KeyError</strong> – If THETA variable not found in dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataArray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">crop_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_max</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#crop_region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Crop THETA data to specified lat/lon bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta_data</strong> (<em>DataArray</em>) – xarray DataArray with XC, YC coordinates</p></li>
+<li><p><strong>lat_min</strong> (<em>float</em>) – Minimum latitude (degrees)</p></li>
+<li><p><strong>lat_max</strong> (<em>float</em>) – Maximum latitude (degrees)</p></li>
+<li><p><strong>lon_min</strong> (<em>float</em>) – Minimum longitude (degrees)</p></li>
+<li><p><strong>lon_max</strong> (<em>float</em>) – Maximum longitude (degrees)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cropped xarray DataArray</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no data points fall within specified bounds</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataArray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">compute_sst_anomalies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#compute_sst_anomalies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Compute SST anomalies relative to temporal mean at each grid point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>theta_data</strong> (<em>DataArray</em>) – xarray DataArray with THETA (SST) data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>xarray DataArray of SST anomalies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataArray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">generate_training_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_anomalies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_anomalies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#generate_training_sequences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Generate training sequences with sliding window approach.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_anomalies</strong> (<em>DataArray</em>) – Input region SST anomalies (time, lat, lon)</p></li>
+<li><p><strong>output_anomalies</strong> (<em>DataArray</em>) – Output region SST anomalies (time, lat, lon)</p></li>
+<li><p><strong>input_length</strong> (<em>int</em>) – Number of days for input sequence</p></li>
+<li><p><strong>output_length</strong> (<em>int</em>) – Number of days for output sequence</p></li>
+<li><p><strong>stride</strong> (<em>int</em>) – Stride between sequences in days</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of (input_sequences, output_sequences, sequence_dates)
+- input_sequences: numpy array (samples, time, lat, lon)
+- output_sequences: numpy array (samples, time, lat, lon)
+- sequence_dates: DataFrame with sequence metadata</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If sequences would be too short given the data length</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<em>ndarray</em>, <em>ndarray</em>, <em>DataFrame</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">save_pytorch_training_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#save_pytorch_training_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Save training data in PyTorch format (deprecated - use save_training_data_hdf5).</p>
+<p>This function is kept for backward compatibility. Use save_training_data_hdf5
+for better performance and compression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_sequences</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>output_sequences</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>sequence_dates</strong> (<em>DataFrame</em>)</p></li>
+<li><p><strong>input_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>output_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>sequence_config</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>save_path</strong> (<em>Path</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-prename descclassname"><span class="pre">data.preprocessing.</span></span><span class="sig-name descname"><span class="pre">preprocess_tiw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processed_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_netcdf_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_region_bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_sequence_length_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_sequence_length_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data/preprocessing.html#preprocess_tiw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Complete preprocessing pipeline for TIW SST data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw_data_path</strong> (<em>Path</em>) – Path to raw data directory</p></li>
+<li><p><strong>processed_data_path</strong> (<em>Path</em>) – Path to processed data directory</p></li>
+<li><p><strong>input_netcdf_filename</strong> (<em>str</em>) – Name of input NetCDF file</p></li>
+<li><p><strong>input_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Dictionary with input region lat/lon bounds</p></li>
+<li><p><strong>output_region_bounds</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – Dictionary with output region lat/lon bounds</p></li>
+<li><p><strong>input_sequence_length_days</strong> (<em>int</em>) – Number of days for input sequences</p></li>
+<li><p><strong>output_sequence_length_days</strong> (<em>int</em>) – Number of days for output sequences</p></li>
+<li><p><strong>stride_days</strong> (<em>int</em>) – Stride between sequences in days</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with preprocessing results and statistics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Dict</em>[str, <em>Any</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="TIW SST Forecasting Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ML Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
