@@ -1,7 +1,7 @@
 # TIW SST Forecasting
 
-[![Tests](https://github.com/username/tiw-sst-forecasting/actions/workflows/tests.yml/badge.svg)](https://github.com/username/tiw-sst-forecasting/actions/workflows/tests.yml)
-[![Documentation](https://github.com/username/tiw-sst-forecasting/actions/workflows/docs.yml/badge.svg)](https://github.com/username/tiw-sst-forecasting/actions/workflows/docs.yml)
+[![Tests](https://github.com/eldavenport/tiw-sst/actions/workflows/tests.yml/badge.svg)](https://github.com/eldavenport/tiw-sst/actions/workflows/tests.yml)
+[![Documentation](https://github.com/eldavenport/tiw-sst/actions/workflows/docs.yml/badge.svg)](https://github.com/eldavenport/tiw-sst/actions/workflows/docs.yml)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -14,7 +14,7 @@ Predicting SST in a small region using 2 weeks of daily input SST data. (aimed a
 3. **Architecture**: Spatiotemporal neural networks (CNN-LSTM, ConvLSTM, or Transformer-based)
 4. **Training**: Sliding window approach with 3-day stride generates ~116 sequences from 1-year MITgcm data
 
-Visit the [online documentation](https://username.github.io/tiw-sst-forecasting/).
+Visit the [online documentation](https://eldavenport.github.io/tiw-sst/).
 
 ## Data Requirements
 
