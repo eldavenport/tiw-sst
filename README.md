@@ -25,9 +25,3 @@ The current expected raw data format is:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- MITgcm team for ocean simulation framework
-- TPOSE project for tropical Pacific data
-- PyTorch community for deep learning tools
