@@ -237,9 +237,8 @@ class TestSavePytorchTrainingData:
             processed_data_path
         )
         
-        # Check files were created
+        # Check files were created (CSV no longer created in updated version)
         assert (processed_data_path / 'tiw_sst_training_data.pt').exists()
-        assert (processed_data_path / 'sequence_metadata.csv').exists()
         
         # Check loaded data (allow pandas DataFrame for sequence metadata)
         loaded_data = torch.load(processed_data_path / 'tiw_sst_training_data.pt', weights_only=False)
@@ -298,7 +297,6 @@ class TestPreprocessTiwData:
         
         # Check that files were created (now HDF5 format)
         assert (processed_data_path / 'tiw_sst_training_data.h5').exists()
-        assert (processed_data_path / 'sequence_metadata.csv').exists()
         
         # Check that no NaN values were introduced
         assert results['nan_values']['input'] == 0
@@ -331,9 +329,8 @@ class TestSaveTrainingDataHDF5:
             processed_data_path
         )
         
-        # Check files were created
+        # Check files were created (CSV no longer created, metadata embedded in HDF5)
         assert (processed_data_path / 'tiw_sst_training_data.h5').exists()
-        assert (processed_data_path / 'sequence_metadata.csv').exists()
         
         # Verify HDF5 file contents
         import h5py
@@ -454,9 +451,8 @@ class TestBackwardCompatibility:
                 processed_data_path
             )
         
-        # Check that files were created
+        # Check that files were created (CSV no longer created in updated version)
         assert (processed_data_path / 'tiw_sst_training_data.pt').exists()
-        assert (processed_data_path / 'sequence_metadata.csv').exists()
 
 
 if __name__ == "__main__":
