@@ -4,4 +4,4 @@
 **.npy
 **.npz
 **__pycache__/
-
+**.csv
