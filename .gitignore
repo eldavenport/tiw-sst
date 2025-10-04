@@ -1,8 +1,40 @@
+# OS generated files
 **.DS_Store
+
+# Data files (don't commit large datasets)
 **.nc
 **.cdf
 **.npy
 **.npz
-**__pycache__/
-**.csv
 **.h5
+**.pt
+**.csv
+data/raw/
+data/processed/
+data/interim/
+
+# Python
+**__pycache__/
+**.pyc
+**.pyo
+**.egg-info/
+.pytest_cache/
+
+# Documentation builds (source is committed, builds are not)
+docs/build/
+docs/_build/
+
+# IDE
+.vscode/
+.idea/
+**.swp
+**.swo
+
+# Virtual environments
+venv/
+env/
+.env
+
+# MLflow
+mlruns/
+mlflow.db
