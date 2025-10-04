@@ -1,0 +1,26 @@
+name: tiw-sst-forecasting
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.11
+  - pytorch>=2.0.0
+  - torchvision>=0.15.0
+  - xarray>=2023.1.0
+  - numpy>=1.24.0
+  - matplotlib>=3.6.0
+  - pandas>=1.5.0
+  - scikit-learn>=1.2.0
+  - netcdf4>=1.6.0
+  - dask>=2023.1.0
+  - seaborn>=0.12.0
+  - tqdm>=4.64.0
+  - jupyter>=1.0.0
+  - ipykernel>=6.20.0
+  - pytest>=7.0.0
+  - sphinx>=5.0.0
+  - sphinx_rtd_theme
+  - h5py>=3.8.0
+  - pip
+  - pip:
+    - mlflow>=2.8.0

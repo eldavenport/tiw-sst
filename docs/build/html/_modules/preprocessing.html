@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>preprocessing &mdash; TIW SST Forecasting 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TIW SST Forecasting
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TIW SST Forecasting</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">preprocessing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for preprocessing</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TIW SST Data Preprocessing</span>
+
+<span class="sd">This module preprocesses MITgcm SST data for machine learning forecasting of </span>
+<span class="sd">Tropical Instability Waves (TIW).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_theta_data">
+<a class="viewcode-back" href="../modules.html#preprocessing.load_theta_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_theta_data</span><span class="p">(</span><span class="n">netcdf_file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load THETA (SST) data from NetCDF file and remove singleton Z dimension.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        netcdf_file_path: Path to NetCDF file containing THETA data</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        xarray DataArray with THETA data (time, YC, XC)</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: If NetCDF file doesn&#39;t exist</span>
+<span class="sd">        KeyError: If THETA variable not found in dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">netcdf_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NetCDF file not found: </span><span class="si">{</span><span class="n">netcdf_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">netcdf_file_path</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;THETA&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;THETA variable not found in dataset&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Extract THETA and remove Z dimension if present</span>
+    <span class="n">theta_data</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;THETA&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;Z&#39;</span> <span class="ow">in</span> <span class="n">theta_data</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+        <span class="n">theta_data</span> <span class="o">=</span> <span class="n">theta_data</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">theta_data</span></div>
+
+
+
+<div class="viewcode-block" id="crop_region">
+<a class="viewcode-back" href="../modules.html#preprocessing.crop_region">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">crop_region</span><span class="p">(</span><span class="n">theta_data</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">,</span> <span class="n">lat_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+                <span class="n">lon_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crop THETA data to specified lat/lon bounds.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        theta_data: xarray DataArray with XC, YC coordinates</span>
+<span class="sd">        lat_min: Minimum latitude (degrees)</span>
+<span class="sd">        lat_max: Maximum latitude (degrees)</span>
+<span class="sd">        lon_min: Minimum longitude (degrees)</span>
+<span class="sd">        lon_max: Maximum longitude (degrees)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Cropped xarray DataArray</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no data points fall within specified bounds</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create boolean masks for lat/lon selection</span>
+    <span class="n">lat_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_data</span><span class="o">.</span><span class="n">YC</span> <span class="o">&gt;=</span> <span class="n">lat_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">theta_data</span><span class="o">.</span><span class="n">YC</span> <span class="o">&lt;=</span> <span class="n">lat_max</span><span class="p">)</span>
+    <span class="n">lon_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">theta_data</span><span class="o">.</span><span class="n">XC</span> <span class="o">&gt;=</span> <span class="n">lon_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">theta_data</span><span class="o">.</span><span class="n">XC</span> <span class="o">&lt;=</span> <span class="n">lon_max</span><span class="p">)</span>
+    
+    <span class="c1"># Apply spatial cropping</span>
+    <span class="n">cropped_data</span> <span class="o">=</span> <span class="n">theta_data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lat_mask</span> <span class="o">&amp;</span> <span class="n">lon_mask</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Check if any data remains</span>
+    <span class="k">if</span> <span class="n">cropped_data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data points found within bounds: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;lat=[</span><span class="si">{</span><span class="n">lat_min</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">lat_max</span><span class="si">}</span><span class="s2">], lon=[</span><span class="si">{</span><span class="n">lon_min</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">lon_max</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">cropped_data</span></div>
+
+
+
+<div class="viewcode-block" id="compute_sst_anomalies">
+<a class="viewcode-back" href="../modules.html#preprocessing.compute_sst_anomalies">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_sst_anomalies</span><span class="p">(</span><span class="n">theta_data</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute SST anomalies relative to temporal mean at each grid point.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        theta_data: xarray DataArray with THETA (SST) data</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        xarray DataArray of SST anomalies</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute climatological mean at each grid point</span>
+    <span class="n">theta_climatology</span> <span class="o">=</span> <span class="n">theta_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Compute anomalies</span>
+    <span class="n">theta_anomalies</span> <span class="o">=</span> <span class="n">theta_data</span> <span class="o">-</span> <span class="n">theta_climatology</span>
+    
+    <span class="k">return</span> <span class="n">theta_anomalies</span></div>
+
+
+
+<div class="viewcode-block" id="generate_training_sequences">
+<a class="viewcode-back" href="../modules.html#preprocessing.generate_training_sequences">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_training_sequences</span><span class="p">(</span><span class="n">input_anomalies</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">,</span> 
+                              <span class="n">output_anomalies</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">,</span>
+                              <span class="n">input_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+                              <span class="n">output_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+                              <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate training sequences with sliding window approach.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_anomalies: Input region SST anomalies (time, lat, lon)</span>
+<span class="sd">        output_anomalies: Output region SST anomalies (time, lat, lon)</span>
+<span class="sd">        input_length: Number of days for input sequence</span>
+<span class="sd">        output_length: Number of days for output sequence</span>
+<span class="sd">        stride: Stride between sequences in days</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple of (input_sequences, output_sequences, sequence_dates)</span>
+<span class="sd">        - input_sequences: numpy array (samples, time, lat, lon)</span>
+<span class="sd">        - output_sequences: numpy array (samples, time, lat, lon)</span>
+<span class="sd">        - sequence_dates: DataFrame with sequence metadata</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If sequences would be too short given the data length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">total_time_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_anomalies</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+    <span class="n">sequence_length</span> <span class="o">=</span> <span class="n">input_length</span> <span class="o">+</span> <span class="n">output_length</span>
+    
+    <span class="k">if</span> <span class="n">total_time_steps</span> <span class="o">&lt;</span> <span class="n">sequence_length</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data too short: </span><span class="si">{</span><span class="n">total_time_steps</span><span class="si">}</span><span class="s2"> steps &lt; </span><span class="si">{</span><span class="n">sequence_length</span><span class="si">}</span><span class="s2"> required&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate number of possible sequences</span>
+    <span class="n">num_sequences</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_time_steps</span> <span class="o">-</span> <span class="n">sequence_length</span><span class="p">)</span> <span class="o">//</span> <span class="n">stride</span> <span class="o">+</span> <span class="mi">1</span>
+    
+    <span class="k">if</span> <span class="n">num_sequences</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No sequences possible with given parameters&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Initialize lists to store sequences</span>
+    <span class="n">input_sequences</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">output_sequences</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sequence_start_dates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sequence_end_dates</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">sequence_idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_sequences</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Generating sequences&quot;</span><span class="p">):</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">sequence_idx</span> <span class="o">*</span> <span class="n">stride</span>
+        <span class="n">input_end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">input_length</span>
+        <span class="n">output_end_idx</span> <span class="o">=</span> <span class="n">input_end_idx</span> <span class="o">+</span> <span class="n">output_length</span>
+        
+        <span class="c1"># Extract input and output sequences</span>
+        <span class="n">input_seq</span> <span class="o">=</span> <span class="n">input_anomalies</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">input_end_idx</span><span class="p">))</span>
+        <span class="n">output_seq</span> <span class="o">=</span> <span class="n">output_anomalies</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">input_end_idx</span><span class="p">,</span> <span class="n">output_end_idx</span><span class="p">))</span>
+        
+        <span class="c1"># Store sequences as numpy arrays</span>
+        <span class="n">input_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_seq</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">output_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_seq</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        
+        <span class="c1"># Store date information</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">input_anomalies</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">output_anomalies</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">output_end_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">sequence_start_dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">sequence_end_dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+    
+    <span class="c1"># Convert to numpy arrays</span>
+    <span class="n">input_sequences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)</span>
+    <span class="n">output_sequences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">)</span>
+    
+    <span class="c1"># Create DataFrame with sequence metadata</span>
+    <span class="n">sequence_dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;sequence_id&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_sequences</span><span class="p">),</span>
+        <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">sequence_start_dates</span><span class="p">,</span>
+        <span class="s1">&#39;end_date&#39;</span><span class="p">:</span> <span class="n">sequence_end_dates</span>
+    <span class="p">})</span>
+    
+    <span class="k">return</span> <span class="n">input_sequences</span><span class="p">,</span> <span class="n">output_sequences</span><span class="p">,</span> <span class="n">sequence_dates</span></div>
+
+
+
+<div class="viewcode-block" id="save_pytorch_training_data">
+<a class="viewcode-back" href="../modules.html#preprocessing.save_pytorch_training_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_pytorch_training_data</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
+                             <span class="n">output_sequences</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                             <span class="n">sequence_dates</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                             <span class="n">input_region_bounds</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                             <span class="n">output_region_bounds</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                             <span class="n">sequence_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+                             <span class="n">save_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save training data in PyTorch-compatible format.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_sequences: Input sequence array (samples, time, lat, lon)</span>
+<span class="sd">        output_sequences: Output sequence array (samples, time, lat, lon)</span>
+<span class="sd">        sequence_dates: DataFrame with sequence date metadata</span>
+<span class="sd">        input_region_bounds: Dictionary with input region bounds</span>
+<span class="sd">        output_region_bounds: Dictionary with output region bounds</span>
+<span class="sd">        sequence_config: Dictionary with sequence configuration</span>
+<span class="sd">        save_path: Path to save processed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">save_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Convert to PyTorch tensors</span>
+    <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+    <span class="n">output_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+    
+    <span class="c1"># Save data dictionary</span>
+    <span class="n">training_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;input_sequences&#39;</span><span class="p">:</span> <span class="n">input_tensor</span><span class="p">,</span>
+        <span class="s1">&#39;output_sequences&#39;</span><span class="p">:</span> <span class="n">output_tensor</span><span class="p">,</span>
+        <span class="s1">&#39;sequence_metadata&#39;</span><span class="p">:</span> <span class="n">sequence_dates</span><span class="p">,</span>
+        <span class="s1">&#39;input_region_bounds&#39;</span><span class="p">:</span> <span class="n">input_region_bounds</span><span class="p">,</span>
+        <span class="s1">&#39;output_region_bounds&#39;</span><span class="p">:</span> <span class="n">output_region_bounds</span><span class="p">,</span>
+        <span class="s1">&#39;sequence_config&#39;</span><span class="p">:</span> <span class="n">sequence_config</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Save as PyTorch file</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span> <span class="n">save_path</span> <span class="o">/</span> <span class="s1">&#39;tiw_sst_training_data.pt&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Save metadata as CSV for easy inspection</span>
+    <span class="n">sequence_dates</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">save_path</span> <span class="o">/</span> <span class="s1">&#39;sequence_metadata.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="preprocess_tiw_data">
+<a class="viewcode-back" href="../modules.html#preprocessing.preprocess_tiw_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess_tiw_data</span><span class="p">(</span><span class="n">raw_data_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+                       <span class="n">processed_data_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+                       <span class="n">input_netcdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">input_region_bounds</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                       <span class="n">output_region_bounds</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                       <span class="n">input_sequence_length_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">14</span><span class="p">,</span>
+                       <span class="n">output_sequence_length_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                       <span class="n">stride_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete preprocessing pipeline for TIW SST data.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        raw_data_path: Path to raw data directory</span>
+<span class="sd">        processed_data_path: Path to processed data directory</span>
+<span class="sd">        input_netcdf_filename: Name of input NetCDF file</span>
+<span class="sd">        input_region_bounds: Dictionary with input region lat/lon bounds</span>
+<span class="sd">        output_region_bounds: Dictionary with output region lat/lon bounds</span>
+<span class="sd">        input_sequence_length_days: Number of days for input sequences</span>
+<span class="sd">        output_sequence_length_days: Number of days for output sequences</span>
+<span class="sd">        stride_days: Stride between sequences in days</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary with preprocessing results and statistics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load data</span>
+    <span class="n">netcdf_path</span> <span class="o">=</span> <span class="n">raw_data_path</span> <span class="o">/</span> <span class="n">input_netcdf_filename</span>
+    <span class="n">theta_data</span> <span class="o">=</span> <span class="n">load_theta_data</span><span class="p">(</span><span class="n">netcdf_path</span><span class="p">)</span>
+    
+    <span class="c1"># Crop regions</span>
+    <span class="n">input_region_data</span> <span class="o">=</span> <span class="n">crop_region</span><span class="p">(</span><span class="n">theta_data</span><span class="p">,</span> <span class="o">**</span><span class="n">input_region_bounds</span><span class="p">)</span>
+    <span class="n">output_region_data</span> <span class="o">=</span> <span class="n">crop_region</span><span class="p">(</span><span class="n">theta_data</span><span class="p">,</span> <span class="o">**</span><span class="n">output_region_bounds</span><span class="p">)</span>
+    
+    <span class="c1"># Compute anomalies</span>
+    <span class="n">input_sst_anomalies</span> <span class="o">=</span> <span class="n">compute_sst_anomalies</span><span class="p">(</span><span class="n">input_region_data</span><span class="p">)</span>
+    <span class="n">output_sst_anomalies</span> <span class="o">=</span> <span class="n">compute_sst_anomalies</span><span class="p">(</span><span class="n">output_region_data</span><span class="p">)</span>
+    
+    <span class="c1"># Generate sequences</span>
+    <span class="n">input_sequences</span><span class="p">,</span> <span class="n">output_sequences</span><span class="p">,</span> <span class="n">sequence_dates</span> <span class="o">=</span> <span class="n">generate_training_sequences</span><span class="p">(</span>
+        <span class="n">input_sst_anomalies</span><span class="p">,</span> <span class="n">output_sst_anomalies</span><span class="p">,</span>
+        <span class="n">input_sequence_length_days</span><span class="p">,</span> <span class="n">output_sequence_length_days</span><span class="p">,</span> <span class="n">stride_days</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Save data</span>
+    <span class="n">sequence_config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;input_length_days&#39;</span><span class="p">:</span> <span class="n">input_sequence_length_days</span><span class="p">,</span>
+        <span class="s1">&#39;output_length_days&#39;</span><span class="p">:</span> <span class="n">output_sequence_length_days</span><span class="p">,</span>
+        <span class="s1">&#39;stride_days&#39;</span><span class="p">:</span> <span class="n">stride_days</span>
+    <span class="p">}</span>
+    
+    <span class="n">save_pytorch_training_data</span><span class="p">(</span>
+        <span class="n">input_sequences</span><span class="p">,</span> <span class="n">output_sequences</span><span class="p">,</span> <span class="n">sequence_dates</span><span class="p">,</span>
+        <span class="n">input_region_bounds</span><span class="p">,</span> <span class="n">output_region_bounds</span><span class="p">,</span> <span class="n">sequence_config</span><span class="p">,</span>
+        <span class="n">processed_data_path</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Compute statistics</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;total_sequences&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence_dates</span><span class="p">),</span>
+        <span class="s1">&#39;input_shape&#39;</span><span class="p">:</span> <span class="n">input_sequences</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+        <span class="s1">&#39;output_shape&#39;</span><span class="p">:</span> <span class="n">output_sequences</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+        <span class="s1">&#39;input_anomaly_stats&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)),</span>
+            <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)),</span>
+            <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">))</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;output_anomaly_stats&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">)),</span>
+            <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">)),</span>
+            <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">)),</span>
+            <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">))</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;nan_values&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">input_sequences</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Default configuration for TPOSE6 data</span>
+    <span class="n">raw_data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/raw&quot;</span><span class="p">)</span>
+    <span class="n">processed_data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/processed&quot;</span><span class="p">)</span>
+    <span class="n">input_netcdf_filename</span> <span class="o">=</span> <span class="s2">&quot;TPOSE6_Daily_2012_surface.nc&quot;</span>
+    
+    <span class="c1"># Regional bounds adjusted for TPOSE6 data coordinates</span>
+    <span class="n">input_region_bounds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;lat_min&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="s1">&#39;lat_max&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="s1">&#39;lon_min&#39;</span><span class="p">:</span> <span class="mf">210.0</span><span class="p">,</span>
+        <span class="s1">&#39;lon_max&#39;</span><span class="p">:</span> <span class="mf">250.0</span>
+    <span class="p">}</span>
+    
+    <span class="n">output_region_bounds</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;lat_min&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.0</span><span class="p">,</span>
+        <span class="s1">&#39;lat_max&#39;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="s1">&#39;lon_min&#39;</span><span class="p">:</span> <span class="mf">215.0</span><span class="p">,</span>
+        <span class="s1">&#39;lon_max&#39;</span><span class="p">:</span> <span class="mf">225.0</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Run preprocessing</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">preprocess_tiw_data</span><span class="p">(</span>
+        <span class="n">raw_data_path</span><span class="p">,</span> <span class="n">processed_data_path</span><span class="p">,</span> <span class="n">input_netcdf_filename</span><span class="p">,</span>
+        <span class="n">input_region_bounds</span><span class="p">,</span> <span class="n">output_region_bounds</span>
+    <span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preprocessing completed successfully!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;total_sequences&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> training sequences&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input shape: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;input_shape&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output shape: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;output_shape&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ML Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
