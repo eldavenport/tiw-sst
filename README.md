@@ -11,6 +11,7 @@ Predicting SST in a small region using 2 weeks of daily input SST data. (aimed a
 
 1. **Input**: 14 days of daily SST anomaly fields from a large Pacific region (10°N-10°S, 150°W-110°W)
 2. **Output**: 5-day forecast of SST anomalies in the TIW-active region (5°N-3°S, 145°W-135°W)  
+_anomalies are relative to the last day of the input sequence, focusing on short-term forecasts_
 
 Visit the [online documentation](https://eldavenport.github.io/tiw-sst/).
 
@@ -19,7 +20,7 @@ Visit the [online documentation](https://eldavenport.github.io/tiw-sst/).
 The current expected raw data format is: 
 
 - **Format**: NetCDF files from MITgcm simulations
-- **Variable**: `THETA` (potential temperature) with coordinates `(time, Z, YC, XC)`
+- **Variable**: `THETA` (potential temperature) with coordinates `(time, YC, XC)`
 - **Resolution**: Daily timesteps
 
 ## License
