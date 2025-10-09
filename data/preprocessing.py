@@ -260,27 +260,6 @@ def crop_region(
     return cropped_data
 
 
-def compute_sst_anomalies(theta_data: xr.DataArray) -> xr.DataArray:
-    """
-    Compute SST anomalies relative to temporal mean at each grid point.
-    
-    Note: This function is deprecated in favor of computing anomalies 
-    relative to day 14 of each sequence in generate_training_sequences.
-
-    Args:
-        theta_data: xarray DataArray with THETA (SST) data
-
-    Returns:
-        xarray DataArray of SST anomalies
-    """
-    # Compute climatological mean at each grid point
-    theta_climatology = theta_data.mean(dim="time")
-
-    # Compute anomalies
-    theta_anomalies = theta_data - theta_climatology
-
-    return theta_anomalies
-
 
 def generate_training_sequences(
     input_sst: xr.DataArray,

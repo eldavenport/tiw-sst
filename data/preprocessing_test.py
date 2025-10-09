@@ -14,7 +14,7 @@ import pytest
 import torch
 import xarray as xr
 
-from .preprocessing import (compute_sst_anomalies, crop_region,
+from .preprocessing import (crop_region,
                             generate_training_sequences, load_theta_data,
                             load_training_data_hdf5, preprocess_tiw_data,
                             save_training_data_hdf5)
@@ -152,35 +152,21 @@ class TestCropRegion:
             crop_region(sample_theta_data, lat_min, lat_max, lon_min, lon_max)
 
 
-class TestComputeSSTAnomalies:
-    """Test compute_sst_anomalies function."""
-
-    def test_compute_sst_anomalies(self, sample_theta_data):
-        """Test SST anomaly computation."""
-        anomalies = compute_sst_anomalies(sample_theta_data)
-
-        assert isinstance(anomalies, xr.DataArray)
-        assert anomalies.shape == sample_theta_data.shape
-
-        # Check that temporal mean is approximately zero
-        temporal_mean = anomalies.mean(dim="time")
-        assert np.allclose(temporal_mean.values, 0.0, atol=1e-10)
-
 
 class TestGenerateTrainingSequences:
     """Test generate_training_sequences function."""
 
     def test_generate_training_sequences_success(self, sample_theta_data):
         """Test successful sequence generation."""
-        input_anomalies = compute_sst_anomalies(sample_theta_data)
-        output_anomalies = input_anomalies  # Use same data for simplicity
+        input_sst = sample_theta_data
+        output_sst = input_sst  # Use same data for simplicity
 
         input_length = 5
         output_length = 3
         stride = 2
 
         input_seq, output_seq, dates = generate_training_sequences(
-            input_anomalies, output_anomalies, input_length, output_length, stride
+            input_sst, output_sst, input_length, output_length, stride
         )
 
         expected_sequences = (
@@ -200,8 +186,8 @@ class TestGenerateTrainingSequences:
 
     def test_generate_training_sequences_data_too_short(self, sample_theta_data):
         """Test error when data is too short for sequences."""
-        input_anomalies = compute_sst_anomalies(sample_theta_data)
-        output_anomalies = input_anomalies
+        input_sst = sample_theta_data
+        output_sst = input_sst
 
         # Request sequences longer than available data
         input_length = 20
@@ -210,7 +196,7 @@ class TestGenerateTrainingSequences:
 
         with pytest.raises(ValueError, match="Data too short"):
             generate_training_sequences(
-                input_anomalies, output_anomalies, input_length, output_length, stride
+                input_sst, output_sst, input_length, output_length, stride
             )
 
 
