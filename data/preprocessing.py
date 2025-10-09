@@ -263,6 +263,9 @@ def crop_region(
 def compute_sst_anomalies(theta_data: xr.DataArray) -> xr.DataArray:
     """
     Compute SST anomalies relative to temporal mean at each grid point.
+    
+    Note: This function is deprecated in favor of computing anomalies 
+    relative to day 14 of each sequence in generate_training_sequences.
 
     Args:
         theta_data: xarray DataArray with THETA (SST) data
@@ -280,32 +283,36 @@ def compute_sst_anomalies(theta_data: xr.DataArray) -> xr.DataArray:
 
 
 def generate_training_sequences(
-    input_anomalies: xr.DataArray,
-    output_anomalies: xr.DataArray,
+    input_sst: xr.DataArray,
+    output_sst: xr.DataArray,
     input_length: int,
     output_length: int,
     stride: int,
 ) -> Tuple[np.ndarray, np.ndarray, pd.DataFrame]:
     """
-    Generate training sequences with sliding window approach.
+    Generate training sequences with anomalies computed relative to day 14.
+
+    This function creates sequences where anomalies are computed relative to 
+    the last day (day 14) of each input sequence, providing a reference point
+    for forecasting changes in SST patterns.
 
     Args:
-        input_anomalies: Input region SST anomalies (time, lat, lon)
-        output_anomalies: Output region SST anomalies (time, lat, lon)
-        input_length: Number of days for input sequence
+        input_sst: Input region SST data (time, lat, lon) - raw values
+        output_sst: Output region SST data (time, lat, lon) - raw values  
+        input_length: Number of days for input sequence (should be 14)
         output_length: Number of days for output sequence
         stride: Stride between sequences in days
 
     Returns:
         Tuple of (input_sequences, output_sequences, sequence_dates)
-        - input_sequences: numpy array (samples, time, lat, lon)
-        - output_sequences: numpy array (samples, time, lat, lon)
+        - input_sequences: numpy array (samples, time, lat, lon) - anomalies relative to day 14
+        - output_sequences: numpy array (samples, time, lat, lon) - anomalies relative to day 14
         - sequence_dates: DataFrame with sequence metadata
 
     Raises:
         ValueError: If sequences would be too short given the data length
     """
-    total_time_steps = len(input_anomalies.time)
+    total_time_steps = len(input_sst.time)
     sequence_length = input_length + output_length
 
     if total_time_steps < sequence_length:
@@ -330,17 +337,25 @@ def generate_training_sequences(
         input_end_idx = start_idx + input_length
         output_end_idx = input_end_idx + output_length
 
-        # Extract input and output sequences
-        input_seq = input_anomalies.isel(time=slice(start_idx, input_end_idx))
-        output_seq = output_anomalies.isel(time=slice(input_end_idx, output_end_idx))
+        # Extract raw SST sequences
+        input_seq_raw = input_sst.isel(time=slice(start_idx, input_end_idx))
+        output_seq_raw = output_sst.isel(time=slice(input_end_idx, output_end_idx))
+        
+        # Get day 14 (last day of input) as reference for anomalies
+        # Day 14 is at index input_length-1 (e.g., index 13 for 14-day sequence)
+        reference_day = input_seq_raw.isel(time=input_length-1)
+        
+        # Compute anomalies relative to day 14
+        input_anomalies = input_seq_raw - reference_day
+        output_anomalies = output_seq_raw - reference_day
 
         # Store sequences as numpy arrays
-        input_sequences.append(input_seq.values)
-        output_sequences.append(output_seq.values)
+        input_sequences.append(input_anomalies.values)
+        output_sequences.append(output_anomalies.values)
 
         # Store date information
-        start_date = input_anomalies.time[start_idx].values
-        end_date = output_anomalies.time[output_end_idx - 1].values
+        start_date = input_sst.time[start_idx].values
+        end_date = output_sst.time[output_end_idx - 1].values
         sequence_start_dates.append(start_date)
         sequence_end_dates.append(end_date)
 
@@ -568,11 +583,11 @@ def load_training_data_hdf5(data_path: Path, filename: str = "tiw_sst_sequences.
     Raises:
         FileNotFoundError: If HDF5 file doesn't exist
     """
-    hdf5_path = data_path / filename
+    hdf5_path = Path(data_path) / filename
 
     if not hdf5_path.exists():
         # Try old filename for backward compatibility
-        old_path = data_path / "tiw_sst_training_data.h5"
+        old_path = Path(data_path) / "tiw_sst_training_data.h5"
         if old_path.exists():
             hdf5_path = old_path
         else:
@@ -699,8 +714,9 @@ def preprocess_tiw_data(
     Preprocessing pipeline for TIW SST data with optional date encoding.
 
     This function takes a NetCDF file, subsets the domain to specified regions,
-    creates 19-day sequences (14 input + 5 output), optionally encodes dates 
-    into sin/cos seasonal channels, and stores everything in HDF5 format.
+    creates 19-day sequences (14 input + 5 output) with anomalies computed 
+    relative to day 14 of each sequence, optionally encodes dates into sin/cos 
+    seasonal channels, and stores everything in HDF5 format.
 
     Args:
         raw_data_path: Path to raw data directory
@@ -740,14 +756,10 @@ def preprocess_tiw_data(
     input_region_data = crop_region(theta_data, **input_region_bounds)
     output_region_data = crop_region(theta_data, **output_region_bounds)
 
-    # Compute anomalies
-    input_sst_anomalies = compute_sst_anomalies(input_region_data)
-    output_sst_anomalies = compute_sst_anomalies(output_region_data)
-
-    # Generate sequences
+    # Generate sequences (anomalies computed relative to day 14 within each sequence)
     input_sequences, output_sequences, sequence_dates = generate_training_sequences(
-        input_sst_anomalies,
-        output_sst_anomalies,
+        input_region_data,
+        output_region_data,
         input_sequence_length_days,
         output_sequence_length_days,
         stride_days,

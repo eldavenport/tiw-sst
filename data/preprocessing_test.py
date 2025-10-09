@@ -214,25 +214,6 @@ class TestGenerateTrainingSequences:
             )
 
 
-
-        # Check loaded data (allow pandas DataFrame for sequence metadata)
-        loaded_data = torch.load(
-            processed_data_path / "tiw_sst_training_data.pt", weights_only=False
-        )
-        assert "input_sequences" in loaded_data
-        assert "output_sequences" in loaded_data
-        assert "sequence_metadata" in loaded_data
-        assert "input_region_bounds" in loaded_data
-        assert "output_region_bounds" in loaded_data
-        assert "sequence_config" in loaded_data
-
-        # Check tensor types
-        assert isinstance(loaded_data["input_sequences"], torch.Tensor)
-        assert isinstance(loaded_data["output_sequences"], torch.Tensor)
-        assert loaded_data["input_sequences"].dtype == torch.float32
-        assert loaded_data["output_sequences"].dtype == torch.float32
-
-
 class TestPreprocessTiwData:
     """Test complete preprocessing pipeline."""
 
@@ -280,7 +261,7 @@ class TestPreprocessTiwData:
         assert "nan_values" in results
 
         # Check that files were created (now HDF5 format)
-        assert (processed_data_path / "tiw_sst_training_data.h5").exists()
+        assert (processed_data_path / "tiw_sst_sequences.h5").exists()
 
         # Check that no NaN values were introduced
         assert results["nan_values"]["input"] == 0
@@ -333,13 +314,13 @@ class TestSaveTrainingDataHDF5:
             processed_data_path,
         )
 
-        # Check files were created (CSV no longer created, metadata embedded in HDF5)
-        assert (processed_data_path / "tiw_sst_training_data.h5").exists()
+        # Check files were created (metadata embedded in HDF5)
+        assert (processed_data_path / "tiw_sst_sequences.h5").exists()
 
         # Verify HDF5 file contents
         import h5py
 
-        with h5py.File(processed_data_path / "tiw_sst_training_data.h5", "r") as f:
+        with h5py.File(processed_data_path / "tiw_sst_sequences.h5", "r") as f:
             assert "input_sequences" in f
             assert "output_sequences" in f
             assert f["input_sequences"].shape == input_sequences.shape
@@ -446,60 +427,6 @@ class TestLoadTrainingDataHDF5:
 
         with pytest.raises(FileNotFoundError, match="HDF5 file not found"):
             load_training_data_hdf5(processed_data_path)
-
-
-class TestBackwardCompatibility:
-    """Test backward compatibility of old PyTorch format."""
-
-    def test_pytorch_format_still_works(self, temp_dirs):
-        """Test that old PyTorch format functions still work but show deprecation warning."""
-        _, processed_data_path = temp_dirs
-
-        # Create sample data
-        input_sequences = np.random.randn(3, 2, 4, 5)
-        output_sequences = np.random.randn(3, 1, 2, 3)
-        sequence_dates = pd.DataFrame(
-            {
-                "sequence_id": range(3),
-                "start_date": pd.date_range("2012-01-01", periods=3),
-                "end_date": pd.date_range("2012-01-03", periods=3),
-            }
-        )
-
-        input_region_bounds = {
-            "lat_min": -5,
-            "lat_max": 5,
-            "lon_min": 210,
-            "lon_max": 220,
-        }
-        output_region_bounds = {
-            "lat_min": -3,
-            "lat_max": 3,
-            "lon_min": 215,
-            "lon_max": 218,
-        }
-        sequence_config = {
-            "input_length_days": 2,
-            "output_length_days": 1,
-            "stride_days": 1,
-        }
-
-        # Test that deprecated function works but shows warning
-        with pytest.warns(
-            DeprecationWarning, match="save_pytorch_training_data is deprecated"
-        ):
-            save_pytorch_training_data(
-                input_sequences,
-                output_sequences,
-                sequence_dates,
-                input_region_bounds,
-                output_region_bounds,
-                sequence_config,
-                processed_data_path,
-            )
-
-        # Check that files were created (CSV no longer created in updated version)
-        assert (processed_data_path / "tiw_sst_training_data.pt").exists()
 
 
 if __name__ == "__main__":
