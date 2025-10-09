@@ -17,7 +17,6 @@ import xarray as xr
 from .preprocessing import (compute_sst_anomalies, crop_region,
                             generate_training_sequences, load_theta_data,
                             load_training_data_hdf5, preprocess_tiw_data,
-                            save_pytorch_training_data,
                             save_training_data_hdf5)
 
 
@@ -215,54 +214,6 @@ class TestGenerateTrainingSequences:
             )
 
 
-class TestSavePytorchTrainingData:
-    """Test save_pytorch_training_data function."""
-
-    def test_save_pytorch_training_data(self, temp_dirs):
-        """Test saving training data."""
-        _, processed_data_path = temp_dirs
-
-        # Create sample data
-        input_sequences = np.random.randn(10, 5, 8, 12)
-        output_sequences = np.random.randn(10, 3, 6, 8)
-        sequence_dates = pd.DataFrame(
-            {
-                "sequence_id": range(10),
-                "start_date": pd.date_range("2012-01-01", periods=10),
-                "end_date": pd.date_range("2012-01-08", periods=10),
-            }
-        )
-
-        input_region_bounds = {
-            "lat_min": -5,
-            "lat_max": 5,
-            "lon_min": 210,
-            "lon_max": 220,
-        }
-        output_region_bounds = {
-            "lat_min": -3,
-            "lat_max": 3,
-            "lon_min": 215,
-            "lon_max": 218,
-        }
-        sequence_config = {
-            "input_length_days": 5,
-            "output_length_days": 3,
-            "stride_days": 1,
-        }
-
-        save_pytorch_training_data(
-            input_sequences,
-            output_sequences,
-            sequence_dates,
-            input_region_bounds,
-            output_region_bounds,
-            sequence_config,
-            processed_data_path,
-        )
-
-        # Check files were created (CSV no longer created in updated version)
-        assert (processed_data_path / "tiw_sst_training_data.pt").exists()
 
         # Check loaded data (allow pandas DataFrame for sequence metadata)
         loaded_data = torch.load(
