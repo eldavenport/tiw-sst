@@ -4,9 +4,9 @@ on:
   push:
   pull_request:
 
-concurrency:
-  group: ${{ github.ref }}  # cancel previous runs on the same branch
-  cancel-in-progress: true  # cancel outdated runs    
+# concurrency:
+#   group: ${{ github.ref }}  # cancel previous runs on the same branch
+#   cancel-in-progress: true  # cancel outdated runs    
 
 jobs:
   test:
